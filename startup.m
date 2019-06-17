@@ -21,15 +21,20 @@ RippleLab_Data = importdata('MARIO07_200116_GRMES_1-8.rhfe');                   
 
 %% Time-frequency analysis
 
-HFOnr                = 1;                                                                % The first detected HFO in the 
-%Electrode = 'EEG_GRMES_5'
-elektrodenr          = 2;                                                                % This belongs to GRMES_(electrodenr - 1)
-                                                                                         % since row 1 is not an electrode
+RippleLab_Data1_32 = importdata('1-32final.rhfe');
+nbrElectrode = 32;
+names = fieldnames(RippleLab_Data1_32);
 
-HFO_time             = RippleLab_Data.EEG_GRMES_1.st_HFOInfo.m_IntervLims(HFOnr,1) : ... % Je haalt de tijd van je HFO
-                       RippleLab_Data.EEG_GRMES_1.st_HFOInfo.m_IntervLims(HFOnr,2);      % uit de Ripplelab-data, en deze
-Unfiltered_HFO_Data  = raw_Data_1.record_deel1(elektrodenr, HFO_time);                   % tijd gebruik je om de corresponderende 
-                                                                                         % HFO tijd in je ruwe data te halen
+for i = 2:33
+    x{i-1} = cell(size(RippleLab_Data1_32.(names{i}).st_HFOInfo.m_EvtLims,1),1); %initialise sizes 
+    for j =  1:size(x{i-1},1)
+        event{j,:} = RippleLab_Data1_32.(names{i}).st_HFOInfo.m_EvtLims(j,1) : RippleLab_Data1_32.(names{i}).st_HFOInfo.m_EvtLims(j,2);
+        %event(j:length(event) ) = [];
+        %x{i-1} = event;
+    end
+    event(j+1:length(event) ) = [];
+    x{i-1} = event;
+end
 
 [ S, f, t, X ] = time_frequency_analysis(RippleLab_Data, Unfiltered_HFO_Data, HFOnr);
 
